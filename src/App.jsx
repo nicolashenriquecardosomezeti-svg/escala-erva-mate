@@ -152,19 +152,21 @@ export default function EscalaErvaMate() {
 
           <div className="space-y-3">
             {fila.map((pessoa, index) => (
-              <div
-  key={pessoa.id}
-  className="bg-zinc-700 rounded-xl p-4 flex items-center"
->
-  <span className="flex-1">
-    {index + 1}. {pessoa.nome}
-  </span>
-
-  {index === 0 && (
-    <span className="ml-4 text-green-400 font-bold">
-      Próximo
+  <div
+    key={pessoa.id}
+    className="bg-zinc-700 rounded-xl p-4 flex items-center"
+  >
+    <span className="flex-1">
+      {`${index + 1}. ${pessoa.nome}`}
     </span>
-  )}
+
+    {index === 0 && (
+      <span className="ml-4 text-green-400 font-bold">
+        Próximo
+      </span>
+    )}
+  </div>
+))}
 </div>
             ))}
           </div>

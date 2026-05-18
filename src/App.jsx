@@ -151,17 +151,17 @@ export default function EscalaErvaMate() {
           </h2>
 
           <div className="space-y-3">
-            {fila.map((pessoa, index) => (
+           {fila.map((pessoa, index) => (
   <div
     key={pessoa.id}
-    className="bg-zinc-700 rounded-xl p-4 flex items-center"
+    className="bg-zinc-700 rounded-xl p-4 flex items-center justify-between"
   >
-    <span className="flex-1">
+    <span>
       {`${index + 1}. ${pessoa.nome}`}
     </span>
 
     {index === 0 && (
-      <span className="ml-4 text-green-400 font-bold">
+      <span className="text-green-400 font-bold">
         Próximo
       </span>
     )}

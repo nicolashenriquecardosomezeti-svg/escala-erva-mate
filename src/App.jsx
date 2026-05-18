@@ -154,9 +154,9 @@ export default function EscalaErvaMate() {
             {fila.map((pessoa, index) => (
               <div
                 key={pessoa.id}
-                className="bg-zinc-700 rounded-xl p-4 flex justify-between"
+                className="bg-zinc-700 rounded-xl p-4 flex justify-between items-center"
               >
-                <span>
+                <span className="flex-1">
                   {index + 1}. {pessoa.nome}
                 </span>
 

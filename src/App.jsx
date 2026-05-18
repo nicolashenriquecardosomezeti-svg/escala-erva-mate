@@ -6,7 +6,7 @@ export default function EscalaErvaMate() {
   const [historico, setHistorico] = useState([]);
   const [novoMilitar, setNovoMilitar] = useState("");
   const [editandoId, setEditandoId] = useState(null);
-const [nomeEditado, setNomeEditado] = useState("");
+  const [nomeEditado, setNomeEditado] = useState("");
 
   async function carregarFila() {
     const { data, error } = await supabase
@@ -71,38 +71,36 @@ const [nomeEditado, setNomeEditado] = useState("");
   }
 
   async function marcarComprou() {
-  }
-  async function salvarEdicao(id) {
-  if (!nomeEditado.trim()) return;
-
-  await supabase
-    .from("fila")
-    .update({ nome: nomeEditado })
-    .eq("id", id);
-
-  setEditandoId(null);
-  setNomeEditado("");
-  carregarFila();
-}
     if (fila.length === 0) return;
 
     const primeiro = fila[0];
     const ultimaOrdem = fila[fila.length - 1].ordem;
 
-    // adiciona no histórico
     await supabase.from("historico").insert([
       {
         nome: primeiro.nome,
       },
     ]);
 
-    // joga para o fim da fila
     await supabase
       .from("fila")
       .update({ ordem: ultimaOrdem + 1 })
       .eq("id", primeiro.id);
 
     carregarHistorico();
+  }
+
+  async function salvarEdicao(id) {
+    if (!nomeEditado.trim()) return;
+
+    await supabase
+      .from("fila")
+      .update({ nome: nomeEditado })
+      .eq("id", id);
+
+    setEditandoId(null);
+    setNomeEditado("");
+    carregarFila();
   }
 
   return (
@@ -159,61 +157,63 @@ const [nomeEditado, setNomeEditado] = useState("");
           </button>
         </div>
 
-{/* FILA */}
-<div className="bg-zinc-800 rounded-2xl p-6 shadow-lg mt-8">
-  <h2 className="text-2xl mb-4 font-semibold">
-    Ordem da fila
-  </h2>
+        {/* FILA */}
+        <div className="bg-zinc-800 rounded-2xl p-6 shadow-lg mt-8">
+          <h2 className="text-2xl mb-4 font-semibold">
+            Ordem da fila
+          </h2>
 
-  <div className="space-y-3">
-    {fila.map((pessoa, index) => (
-  <div
-    key={pessoa.id}
-    className="bg-zinc-700 rounded-xl p-4 flex items-center justify-between gap-3"
-  >
-    {editandoId === pessoa.id ? (
-      <>
-        <input
-          value={nomeEditado}
-          onChange={(e) => setNomeEditado(e.target.value)}
-          className="flex-1 bg-zinc-600 rounded-xl p-2 outline-none"
-        />
-        <button
-          onClick={() => salvarEdicao(pessoa.id)}
-          className="text-green-400 font-bold"
-        >
-          ✅
-        </button>
-        <button
-          onClick={() => setEditandoId(null)}
-          className="text-red-400 font-bold"
-        >
-          ❌
-        </button>
-      </>
-    ) : (
-      <>
-        <span className="flex-1">
-          {`${index + 1}. ${pessoa.nome}`}
-        </span>
-        <button
-          onClick={() => {
-            setEditandoId(pessoa.id);
-            setNomeEditado(pessoa.nome);
-          }}
-          className="text-zinc-400 hover:text-white"
-        >
-          ✏️
-        </button>
-        {index === 0 && (
-          <span className="text-green-400 font-bold">
-            Próximo
-          </span>
-        )}
-      </>
-    )}
-  </div>
-))}
+          <div className="space-y-3">
+            {fila.map((pessoa, index) => (
+              <div
+                key={pessoa.id}
+                className="bg-zinc-700 rounded-xl p-4 flex items-center justify-between gap-3"
+              >
+                {editandoId === pessoa.id ? (
+                  <>
+                    <input
+                      value={nomeEditado}
+                      onChange={(e) => setNomeEditado(e.target.value)}
+                      className="flex-1 bg-zinc-600 rounded-xl p-2 outline-none"
+                    />
+                    <button
+                      onClick={() => salvarEdicao(pessoa.id)}
+                      className="text-green-400 font-bold"
+                    >
+                      ✅
+                    </button>
+                    <button
+                      onClick={() => setEditandoId(null)}
+                      className="text-red-400 font-bold"
+                    >
+                      ❌
+                    </button>
+                  </>
+                ) : (
+                  <>
+                    <span className="flex-1">
+                      {`${index + 1}. ${pessoa.nome}`}
+                    </span>
+                    <button
+                      onClick={() => {
+                        setEditandoId(pessoa.id);
+                        setNomeEditado(pessoa.nome);
+                      }}
+                      className="text-zinc-400 hover:text-white"
+                    >
+                      ✏️
+                    </button>
+                    {index === 0 && (
+                      <span className="text-green-400 font-bold">
+                        Próximo
+                      </span>
+                    )}
+                  </>
+                )}
+              </div>
+            ))}
+          </div>
+        </div>
 
         {/* HISTÓRICO */}
         <div className="bg-zinc-800 rounded-2xl p-6 shadow-lg mt-8">

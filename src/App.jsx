@@ -144,33 +144,31 @@ export default function EscalaErvaMate() {
           </button>
         </div>
 
-        {/* FILA */}
-        <div className="bg-zinc-800 rounded-2xl p-6 shadow-lg mt-8">
-          <h2 className="text-2xl mb-4 font-semibold">
-            Ordem da fila
-          </h2>
+{/* FILA */}
+<div className="bg-zinc-800 rounded-2xl p-6 shadow-lg mt-8">
+  <h2 className="text-2xl mb-4 font-semibold">
+    Ordem da fila
+  </h2>
 
-          <div className="space-y-3">
-           {fila.map((pessoa, index) => (
-  <div
-    key={pessoa.id}
-    className="bg-zinc-700 rounded-xl p-4 flex items-center justify-between"
-  >
-    <span>
-      {`${index + 1}. ${pessoa.nome}`}
-    </span>
+  <div className="space-y-3">
+    {fila.map((pessoa, index) => (
+      <div
+        key={pessoa.id}
+        className="bg-zinc-700 rounded-xl p-4 flex items-center justify-between"
+      >
+        <span>
+          {`${index + 1}. ${pessoa.nome}`}
+        </span>
 
-    {index === 0 && (
-      <span className="text-green-400 font-bold">
-        Próximo
-      </span>
-    )}
+        {index === 0 && (
+          <span className="text-green-400 font-bold">
+            Próximo
+          </span>
+        )}
+      </div>
+    ))}
   </div>
-))}
 </div>
-            ))}
-          </div>
-        </div>
 
         {/* HISTÓRICO */}
         <div className="bg-zinc-800 rounded-2xl p-6 shadow-lg mt-8">

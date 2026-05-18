@@ -3,6 +3,8 @@ import { supabase } from "./supabase";
 
 export default function EscalaErvaMate() {
   const [fila, setFila] = useState([]);
+  const [historico, setHistorico] = useState([]);
+  const [novoMilitar, setNovoMilitar] = useState("");
 
   async function carregarFila() {
     const { data, error } = await supabase
@@ -15,8 +17,20 @@ export default function EscalaErvaMate() {
     }
   }
 
+  async function carregarHistorico() {
+    const { data, error } = await supabase
+      .from("historico")
+      .select("*")
+      .order("data_compra", { ascending: false });
+
+    if (!error) {
+      setHistorico(data);
+    }
+  }
+
   useEffect(() => {
     carregarFila();
+    carregarHistorico();
 
     const canal = supabase
       .channel("fila")
@@ -38,28 +52,80 @@ export default function EscalaErvaMate() {
     };
   }, []);
 
+  async function adicionarMilitar() {
+    if (!novoMilitar.trim()) return;
+
+    const ultimaOrdem =
+      fila.length > 0 ? fila[fila.length - 1].ordem : 0;
+
+    await supabase.from("fila").insert([
+      {
+        nome: novoMilitar,
+        ordem: ultimaOrdem + 1,
+      },
+    ]);
+
+    setNovoMilitar("");
+  }
+
   async function marcarComprou() {
     if (fila.length === 0) return;
 
     const primeiro = fila[0];
     const ultimaOrdem = fila[fila.length - 1].ordem;
 
+    // adiciona no histórico
+    await supabase.from("historico").insert([
+      {
+        nome: primeiro.nome,
+      },
+    ]);
+
+    // joga para o fim da fila
     await supabase
       .from("fila")
       .update({ ordem: ultimaOrdem + 1 })
       .eq("id", primeiro.id);
+
+    carregarHistorico();
   }
 
   return (
     <div className="min-h-screen bg-zinc-900 text-white p-6">
-      <div className="max-w-2xl mx-auto">
+      <div className="max-w-3xl mx-auto">
+
         <h1 className="text-4xl font-bold text-center mb-8">
           🧉 Escala da Erva Mate
         </h1>
 
+        {/* ADICIONAR MILITAR */}
+        <div className="bg-zinc-800 rounded-2xl p-6 shadow-lg mb-8">
+          <h2 className="text-2xl font-semibold mb-4">
+            Adicionar Militar
+          </h2>
+
+          <div className="flex gap-3">
+            <input
+              type="text"
+              placeholder="Nome do militar"
+              value={novoMilitar}
+              onChange={(e) => setNovoMilitar(e.target.value)}
+              className="flex-1 bg-zinc-700 rounded-xl p-3 outline-none"
+            />
+
+            <button
+              onClick={adicionarMilitar}
+              className="bg-blue-600 hover:bg-blue-700 px-6 rounded-xl font-bold"
+            >
+              ➕ Adicionar
+            </button>
+          </div>
+        </div>
+
+        {/* PRÓXIMO */}
         <div className="bg-zinc-800 rounded-2xl p-6 shadow-lg">
           <h2 className="text-2xl mb-4 font-semibold">
-            Próximo a comprar:
+            Próximo a comprar
           </h2>
 
           {fila.length > 0 && (
@@ -78,6 +144,7 @@ export default function EscalaErvaMate() {
           </button>
         </div>
 
+        {/* FILA */}
         <div className="bg-zinc-800 rounded-2xl p-6 shadow-lg mt-8">
           <h2 className="text-2xl mb-4 font-semibold">
             Ordem da fila
@@ -102,6 +169,29 @@ export default function EscalaErvaMate() {
             ))}
           </div>
         </div>
+
+        {/* HISTÓRICO */}
+        <div className="bg-zinc-800 rounded-2xl p-6 shadow-lg mt-8">
+          <h2 className="text-2xl mb-4 font-semibold">
+            Histórico de Compras
+          </h2>
+
+          <div className="space-y-3">
+            {historico.map((item) => (
+              <div
+                key={item.id}
+                className="bg-zinc-700 rounded-xl p-4 flex justify-between"
+              >
+                <span>{item.nome}</span>
+
+                <span className="text-zinc-300 text-sm">
+                  {new Date(item.data_compra).toLocaleString("pt-BR")}
+                </span>
+              </div>
+            ))}
+          </div>
+        </div>
+
       </div>
     </div>
   );

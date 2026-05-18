@@ -5,11 +5,12 @@ export default function EscalaErvaMate() {
     return salva
       ? JSON.parse(salva)
       : [
-          'Nicolas',
-          'Carlos',
-          'Mateus',
-          'Pedro',
-          'João',
+          'Sd Nicolas',
+          'Sgt Gustavo',
+          'Sgt Finamor',
+          'Sgt Nene',
+          'Cb Victor',
+          'Sd Velasque',
         ];
   });
 

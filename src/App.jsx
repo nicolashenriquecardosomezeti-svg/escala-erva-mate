@@ -39,17 +39,16 @@ useEffect(() => {
   carregarDados();
 
   const canal = supabase
-    .channel("fila")
+    .channel("mudancas")
     .on(
       "postgres_changes",
-      {
-        event: "*",
-        schema: "public",
-        table: "fila",
-      },
-      () => {
-        carregarFila();
-      }
+      { event: "*", schema: "public", table: "fila" },
+      () => { carregarFila(); }
+    )
+    .on(
+      "postgres_changes",
+      { event: "*", schema: "public", table: "historico" },
+      () => { carregarHistorico(); }
     )
     .subscribe();
 
@@ -80,18 +79,15 @@ async function marcarComprou() {
   const primeiro = fila[0];
   const ultimaOrdem = fila[fila.length - 1].ordem;
 
-  // salva no histórico
-  await supabase.from("historico").insert([
-    {
-      nome: primeiro.nome,
-    },
-  ]);
+  await supabase.from("historico").insert([{ nome: primeiro.nome }]);
 
-  // move para o final da fila
   await supabase
     .from("fila")
     .update({ ordem: ultimaOrdem + 1 })
     .eq("id", primeiro.id);
+
+  // REMOVE os dois carregarFila/carregarHistorico daqui
+}
 
   // recarrega tudo
   await carregarFila();
@@ -108,7 +104,7 @@ async function marcarComprou() {
 
     setEditandoId(null);
     setNomeEditado("");
-    carregarFila();
+    await carregarFila();
   }
 
   return (

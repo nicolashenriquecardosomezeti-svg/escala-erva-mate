@@ -74,25 +74,29 @@ useEffect(() => {
     setNovoMilitar("");
   }
 
-  async function marcarComprou() {
-    if (fila.length === 0) return;
+async function marcarComprou() {
+  if (fila.length === 0) return;
 
-    const primeiro = fila[0];
-    const ultimaOrdem = fila[fila.length - 1].ordem;
+  const primeiro = fila[0];
+  const ultimaOrdem = fila[fila.length - 1].ordem;
 
-    await supabase.from("historico").insert([
-      {
-        nome: primeiro.nome,
-      },
-    ]);
+  // salva no histórico
+  await supabase.from("historico").insert([
+    {
+      nome: primeiro.nome,
+    },
+  ]);
 
-    await supabase
-      .from("fila")
-      .update({ ordem: ultimaOrdem + 1 })
-      .eq("id", primeiro.id);
+  // move para o final da fila
+  await supabase
+    .from("fila")
+    .update({ ordem: ultimaOrdem + 1 })
+    .eq("id", primeiro.id);
 
-    carregarHistorico();
-  }
+  // recarrega tudo
+  await carregarFila();
+  await carregarHistorico();
+}
 
   async function salvarEdicao(id) {
     if (!nomeEditado.trim()) return;

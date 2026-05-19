@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { supabase } from "./supabase";
 
 export default function EscalaErvaMate() {
@@ -30,29 +30,33 @@ export default function EscalaErvaMate() {
     }
   }
 
-  useEffect(() => {
-    carregarFila();
-    carregarHistorico();
+useEffect(() => {
+  async function carregarDados() {
+    await carregarFila();
+    await carregarHistorico();
+  }
 
-    const canal = supabase
-      .channel("fila")
-      .on(
-        "postgres_changes",
-        {
-          event: "*",
-          schema: "public",
-          table: "fila",
-        },
-        () => {
-          carregarFila();
-        }
-      )
-      .subscribe();
+  carregarDados();
 
-    return () => {
-      supabase.removeChannel(canal);
-    };
-  }, []);
+  const canal = supabase
+    .channel("fila")
+    .on(
+      "postgres_changes",
+      {
+        event: "*",
+        schema: "public",
+        table: "fila",
+      },
+      () => {
+        carregarFila();
+      }
+    )
+    .subscribe();
+
+  return () => {
+    supabase.removeChannel(canal);
+  };
+}, []);
 
   async function adicionarMilitar() {
     if (!novoMilitar.trim()) return;

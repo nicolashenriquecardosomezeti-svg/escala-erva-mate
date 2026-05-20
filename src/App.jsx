@@ -85,15 +85,7 @@ async function marcarComprou() {
     .from("fila")
     .update({ ordem: ultimaOrdem + 1 })
     .eq("id", primeiro.id);
-
-  // REMOVE os dois carregarFila/carregarHistorico daqui
 }
-
-  // recarrega tudo
-  await carregarFila();
-  await carregarHistorico();
-}
-
   async function salvarEdicao(id) {
     if (!nomeEditado.trim()) return;
 
